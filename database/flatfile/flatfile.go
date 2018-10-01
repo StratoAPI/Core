@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/Vilsol/ResourceAPI/database/filters"
+	"github.com/ResourceAPI/Core/database/filters"
 )
 
 var flatfile Flatfile

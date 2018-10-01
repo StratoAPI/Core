@@ -1,6 +1,6 @@
 package database
 
-import "github.com/Vilsol/ResourceAPI/database/filters"
+import "github.com/ResourceAPI/Core/database/filters"
 
 type Database interface {
 	Wipe()

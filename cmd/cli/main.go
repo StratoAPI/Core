@@ -1,7 +1,7 @@
 package main
 
-import "github.com/Vilsol/ResourceAPI"
+import "github.com/ResourceAPI/Core"
 
 func main() {
-	ResourceAPI.Serve()
+	Core.Serve()
 }

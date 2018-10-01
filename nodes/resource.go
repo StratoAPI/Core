@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/ResourceAPI/Core/database"
+	"github.com/ResourceAPI/Core/database/filters"
+	"github.com/ResourceAPI/Core/schema"
 	"github.com/Vilsol/GoLib"
-	"github.com/Vilsol/ResourceAPI/database"
-	"github.com/Vilsol/ResourceAPI/database/filters"
-	"github.com/Vilsol/ResourceAPI/schema"
 	"github.com/gorilla/mux"
 )
 

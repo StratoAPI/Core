@@ -1,4 +1,4 @@
-module github.com/Vilsol/ResourceAPI
+module github.com/ResourceAPI/Core
 
 require (
 	github.com/Vilsol/GoLib v0.0.7

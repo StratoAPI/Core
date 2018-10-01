@@ -3,8 +3,8 @@ package database
 import (
 	"fmt"
 
-	"github.com/Vilsol/ResourceAPI/config"
-	"github.com/Vilsol/ResourceAPI/database/flatfile"
+	"github.com/ResourceAPI/Core/config"
+	"github.com/ResourceAPI/Core/database/flatfile"
 )
 
 var databaseInstance Database

@@ -1,16 +1,15 @@
-package ResourceAPI
+package Core
 
 import (
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/Vilsol/ResourceAPI/config"
-
+	"github.com/ResourceAPI/Core/config"
+	"github.com/ResourceAPI/Core/database"
+	"github.com/ResourceAPI/Core/nodes"
+	"github.com/ResourceAPI/Core/schema"
 	"github.com/Vilsol/GoLib"
-	"github.com/Vilsol/ResourceAPI/database"
-	"github.com/Vilsol/ResourceAPI/nodes"
-	"github.com/Vilsol/ResourceAPI/schema"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
