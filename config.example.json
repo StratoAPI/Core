@@ -1,0 +1,11 @@
+{
+  "host": "0.0.0.0",
+  "port": 5020,
+
+  "database": {
+    "type": "flatfile",
+    "flatfile": {
+      "location": "data.json"
+    }
+  }
+}
