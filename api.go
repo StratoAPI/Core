@@ -1,41 +1,35 @@
 package Core
 
 import (
-	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/ResourceAPI/Core/config"
 	"github.com/ResourceAPI/Core/database"
-	"github.com/ResourceAPI/Core/nodes"
+	"github.com/ResourceAPI/Core/plugins"
 	"github.com/ResourceAPI/Core/schema"
-	"github.com/Vilsol/GoLib"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 )
 
-func Serve() {
+func Run() {
+	// Initialize Core
 	config.InitializeConfig()
 	schema.InitializeSchemas()
 	database.InitializeDatabase()
 
-	router := mux.NewRouter()
-	router.NotFoundHandler = GoLib.LoggerHandler(GoLib.NotFoundHandler())
+	// Initialize Plugins
+	plugins.InitializePlugins()
+	plugins.InitializeStores()
+	plugins.InitializeFilters()
+	plugins.InitializeFacades()
 
-	v1 := GoLib.RouteHandler(router, "/v1")
-	nodes.RegisterResourceRoutes(v1)
+	// Start up stores
+	plugins.StartStores()
 
-	CORSHandler := handlers.CORS(
-		handlers.AllowedOrigins([]string{"*"}),
-		handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"}),
-	)
+	// Start up filters
+	plugins.StartFilters()
 
-	var finalRouter http.Handler = router
-	finalRouter = GoLib.LoggerHandler(finalRouter)
-	finalRouter = handlers.CompressHandler(finalRouter)
-	finalRouter = handlers.ProxyHeaders(finalRouter)
-	finalRouter = CORSHandler(finalRouter)
+	// Start up facades
+	plugins.StartFacades()
 
-	fmt.Printf("Listening on port %d\n", config.Get().Port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Get().Port), finalRouter))
+	// Wait for goroutines
+	plugins.WaitForGoroutines()
+
+	// TODO Graceful shutdown
 }
