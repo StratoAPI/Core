@@ -2,6 +2,8 @@
   "host": "0.0.0.0",
   "port": 5020,
 
+  "plugin_directory": "plugins",
+
   "database": {
     "type": "flatfile",
     "flatfile": {

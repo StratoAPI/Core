@@ -1,4 +1,9 @@
-package Core
+package plugins
+
+type Plugin interface {
+	Name() string
+	Entrypoint()
+}
 
 type Facade interface {
 	// Initialize the facade.
@@ -9,11 +14,6 @@ type Facade interface {
 
 	// Graceful stopping of the facade with a 30s timeout.
 	Stop() error
-}
-
-func RegisterFacade(name string, facade Facade) error {
-	// TODO
-	return nil
 }
 
 type Storage interface {
@@ -39,11 +39,6 @@ type Storage interface {
 	DeleteResources(resource string, filters []interface{}) error
 }
 
-func RegisterStorage(name string, storage Storage) error {
-	// TODO
-	return nil
-}
-
 type Filter interface {
 	// Initialize the filter.
 	Initialize() error
@@ -56,14 +51,4 @@ type Filter interface {
 
 	// Validate structure for filter validness
 	ValidateFilter(filter interface{}) (bool, error)
-}
-
-func RegisterFilter(name string, filter Filter) error {
-	// TODO
-	return nil
-}
-
-func AssociateFilter(filter string, storage string) error {
-	// TODO
-	return nil
 }
