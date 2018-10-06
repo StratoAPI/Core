@@ -126,3 +126,7 @@ func AssociateFilter(filter string, storage string) error {
 
 	return nil
 }
+
+func GetStore(store string) *Storage {
+	return stores[store]
+}
