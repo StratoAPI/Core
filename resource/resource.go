@@ -6,7 +6,7 @@ import (
 )
 
 func GetStore(resource string) *plugins.Storage {
-	return plugins.GetStore(schema.GetSchema(resource).GetStore())
+	return plugins.GetStore(schema.GetSchema(resource).Meta.Store)
 }
 
 func GetResources() []string {
