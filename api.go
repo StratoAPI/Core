@@ -2,7 +2,8 @@ package Core
 
 import (
 	"github.com/ResourceAPI/Core/config"
-	"github.com/ResourceAPI/Core/plugins"
+	"github.com/ResourceAPI/Core/registry"
+	"github.com/ResourceAPI/Core/resource"
 	"github.com/ResourceAPI/Core/schema"
 )
 
@@ -10,24 +11,25 @@ func Run() {
 	// Initialize Core
 	config.InitializeConfig()
 	schema.InitializeSchemas()
+	resource.InitializeResources()
 
 	// Initialize Plugins
-	plugins.InitializePlugins()
-	plugins.InitializeStores()
-	plugins.InitializeFilters()
-	plugins.InitializeFacades()
+	registry.InitializePlugins()
+	registry.InitializeStores()
+	registry.InitializeFilters()
+	registry.InitializeFacades()
 
 	// Start up stores
-	plugins.StartStores()
+	registry.StartStores()
 
 	// Start up filters
-	plugins.StartFilters()
+	registry.StartFilters()
 
 	// Start up facades
-	plugins.StartFacades()
+	registry.StartFacades()
 
 	// Wait for goroutines
-	plugins.WaitForGoroutines()
+	registry.WaitForGoroutines()
 
 	// TODO Graceful shutdown
 }

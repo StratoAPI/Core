@@ -8,21 +8,21 @@ import (
 	"os"
 	"strings"
 
+	schemaInt "github.com/ResourceAPI/Interface/schema"
+
 	"github.com/xeipuuv/gojsonschema"
 )
 
-type Schema struct {
+type CoreProcessor struct {
+	schemas map[string]CoreSchema
+}
+
+var coreProcessor *CoreProcessor
+
+type CoreSchema struct {
+	Parent schemaInt.Schema
 	Data   gojsonschema.JSONLoader
-	Source map[string]interface{}
-	Meta   ResourceMeta
 }
-
-type ResourceMeta struct {
-	Resource string `json:"resource"`
-	Store    string `json:"store"`
-}
-
-var schemas = make(map[string]Schema)
 
 func InitializeSchemas() {
 	files, err := ioutil.ReadDir("./resources")
@@ -30,6 +30,12 @@ func InitializeSchemas() {
 	if err != nil {
 		panic(err)
 	}
+
+	coreProcessor = &CoreProcessor{
+		schemas: make(map[string]CoreSchema),
+	}
+
+	schemaInt.SetProcessor(coreProcessor)
 
 	for _, f := range files {
 		if strings.HasSuffix(f.Name(), ".json") {
@@ -51,7 +57,7 @@ func InitializeSchemas() {
 			}
 
 			temp, _ := json.Marshal(source["meta"])
-			meta := new(ResourceMeta)
+			meta := new(schemaInt.ResourceMeta)
 			err = json.Unmarshal(temp, &meta)
 
 			if err != nil {
@@ -60,10 +66,12 @@ func InitializeSchemas() {
 				continue
 			}
 
-			s := Schema{
-				Data:   schema,
-				Source: source,
-				Meta:   *meta,
+			s := CoreSchema{
+				Data: schema,
+				Parent: schemaInt.Schema{
+					Source: source,
+					Meta:   *meta,
+				},
 			}
 
 			if err != nil {
@@ -72,20 +80,20 @@ func InitializeSchemas() {
 				continue
 			}
 
-			schemas[meta.Resource] = s
+			coreProcessor.schemas[meta.Resource] = s
 		}
 	}
 
-	fmt.Printf("Loaded %d schema(s)\n", len(schemas))
+	fmt.Printf("Loaded %d schema(s)\n", len(coreProcessor.schemas))
 }
 
-func ResourceExists(resource string) bool {
-	_, ok := schemas[resource]
+func (cp CoreProcessor) ResourceExists(resource string) bool {
+	_, ok := cp.schemas[resource]
 	return ok
 }
 
-func ResourceValid(resource string, data string) (bool, error) {
-	result, err := gojsonschema.Validate(schemas[resource].Data, gojsonschema.NewStringLoader(data))
+func (cp CoreProcessor) ResourceValid(resource string, data string) (bool, error) {
+	result, err := gojsonschema.Validate(cp.schemas[resource].Data, gojsonschema.NewStringLoader(data))
 
 	if err != nil {
 		return false, err
@@ -108,11 +116,11 @@ func ResourceValid(resource string, data string) (bool, error) {
 	return false, errors.New(errs)
 }
 
-func GetSchema(resource string) *Schema {
-	if _, ok := schemas[resource]; !ok {
+func (cp CoreProcessor) GetSchema(resource string) *schemaInt.Schema {
+	if _, ok := cp.schemas[resource]; !ok {
 		return nil
 	}
 
-	schema := schemas[resource]
-	return &schema
+	schema := cp.schemas[resource]
+	return &(schema.Parent)
 }

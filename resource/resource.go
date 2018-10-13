@@ -1,15 +1,27 @@
 package resource
 
 import (
-	"github.com/ResourceAPI/Core/plugins"
-	"github.com/ResourceAPI/Core/schema"
+	"github.com/ResourceAPI/Core/registry"
+	"github.com/ResourceAPI/Interface/plugins"
+	"github.com/ResourceAPI/Interface/resource"
+	"github.com/ResourceAPI/Interface/schema"
 )
 
-func GetStore(resource string) *plugins.Storage {
-	return plugins.GetStore(schema.GetSchema(resource).Meta.Store)
+type CoreProcessor struct {
 }
 
-func GetResources() []string {
+var coreProcessor *CoreProcessor
+
+func InitializeResources() {
+	coreProcessor = &CoreProcessor{}
+	resource.SetProcessor(coreProcessor)
+}
+
+func (cp CoreProcessor) GetStore(resource string) *plugins.Storage {
+	return registry.GetRegistryInternal().GetStore(schema.GetProcessor().GetSchema(resource).Meta.Store)
+}
+
+func (cp CoreProcessor) GetResources() []string {
 	// TODO
 	return []string{}
 }
