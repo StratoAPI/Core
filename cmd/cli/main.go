@@ -1,6 +1,6 @@
 package main
 
-import "github.com/ResourceAPI/Core"
+import "github.com/StratoAPI/Core"
 
 func main() {
 	Core.Run()

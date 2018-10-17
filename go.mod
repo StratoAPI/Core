@@ -1,9 +1,9 @@
-module github.com/ResourceAPI/Core
+module github.com/StratoAPI/Core
 
-replace github.com/ResourceAPI/Interface v0.0.0 => ../Interface
+replace github.com/StratoAPI/Interface v0.0.0 => ../Interface
 
 require (
-	github.com/ResourceAPI/Interface v0.0.0
+	github.com/StratoAPI/Interface v0.0.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect

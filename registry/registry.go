@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"plugin"
 
-	"github.com/ResourceAPI/Core/config"
-	"github.com/ResourceAPI/Interface/plugins"
+	"github.com/StratoAPI/Core/config"
+	"github.com/StratoAPI/Interface/plugins"
 )
 
 type CoreRegistry struct {

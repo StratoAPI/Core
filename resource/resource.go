@@ -1,10 +1,10 @@
 package resource
 
 import (
-	"github.com/ResourceAPI/Core/registry"
-	"github.com/ResourceAPI/Interface/plugins"
-	"github.com/ResourceAPI/Interface/resource"
-	"github.com/ResourceAPI/Interface/schema"
+	"github.com/StratoAPI/Core/registry"
+	"github.com/StratoAPI/Interface/plugins"
+	"github.com/StratoAPI/Interface/resource"
+	"github.com/StratoAPI/Interface/schema"
 )
 
 type CoreProcessor struct {

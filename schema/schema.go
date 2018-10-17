@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	schemaInt "github.com/ResourceAPI/Interface/schema"
+	schemaInt "github.com/StratoAPI/Interface/schema"
 
 	"github.com/xeipuuv/gojsonschema"
 )

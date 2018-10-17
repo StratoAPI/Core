@@ -1,10 +1,10 @@
 package Core
 
 import (
-	"github.com/ResourceAPI/Core/config"
-	"github.com/ResourceAPI/Core/registry"
-	"github.com/ResourceAPI/Core/resource"
-	"github.com/ResourceAPI/Core/schema"
+	"github.com/StratoAPI/Core/config"
+	"github.com/StratoAPI/Core/registry"
+	"github.com/StratoAPI/Core/resource"
+	"github.com/StratoAPI/Core/schema"
 )
 
 func Run() {
