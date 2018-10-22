@@ -2,6 +2,7 @@ package Core
 
 import (
 	"github.com/StratoAPI/Core/config"
+	"github.com/StratoAPI/Core/filter"
 	"github.com/StratoAPI/Core/registry"
 	"github.com/StratoAPI/Core/resource"
 	"github.com/StratoAPI/Core/schema"
@@ -10,8 +11,10 @@ import (
 func Run() {
 	// Initialize Core
 	config.InitializeConfig()
+	registry.InitializeRegistry()
 	schema.InitializeSchemas()
 	resource.InitializeResources()
+	filter.InitializeFilters()
 
 	// Initialize Plugins
 	registry.InitializePlugins()

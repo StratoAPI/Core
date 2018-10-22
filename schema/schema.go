@@ -93,7 +93,15 @@ func (cp CoreProcessor) ResourceExists(resource string) bool {
 }
 
 func (cp CoreProcessor) ResourceValid(resource string, data string) (bool, error) {
-	result, err := gojsonschema.Validate(cp.schemas[resource].Data, gojsonschema.NewStringLoader(data))
+	return cp.validateSchema(resource, gojsonschema.NewStringLoader(data))
+}
+
+func (cp CoreProcessor) ResourceValidGo(resource string, data interface{}) (bool, error) {
+	return cp.validateSchema(resource, gojsonschema.NewGoLoader(data))
+}
+
+func (cp CoreProcessor) validateSchema(resource string, loader gojsonschema.JSONLoader) (bool, error) {
+	result, err := gojsonschema.Validate(cp.schemas[resource].Data, loader)
 
 	if err != nil {
 		return false, err

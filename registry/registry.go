@@ -22,14 +22,16 @@ func GetRegistryInternal() *CoreRegistry {
 	return coreRegistry
 }
 
-func InitializePlugins() {
+func InitializeRegistry() {
 	coreRegistry = &CoreRegistry{
 		facades:    make(map[string]*plugins.Facade),
 		stores:     make(map[string]*plugins.Storage),
 		filters:    make(map[string]*plugins.Filter),
 		associates: make(map[string][]string),
 	}
+}
 
+func InitializePlugins() {
 	files, err := ioutil.ReadDir(config.Get().PluginDirectory)
 
 	if err != nil {
@@ -142,4 +144,12 @@ func (cr CoreRegistry) AssociateFilter(filter string, storage string) error {
 
 func (cr CoreRegistry) GetStore(store string) *plugins.Storage {
 	return cr.stores[store]
+}
+
+func (cr CoreRegistry) GetFilter(filter string) *plugins.Filter {
+	return cr.filters[filter]
+}
+
+func (cr CoreRegistry) GetAssociates(filter string) []string {
+	return cr.associates[filter]
 }
