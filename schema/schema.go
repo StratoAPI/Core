@@ -22,7 +22,7 @@ var coreProcessor *CoreProcessor
 
 type CoreSchema struct {
 	Parent schemaInt.Schema
-	Data   gojsonschema.JSONLoader
+	Data   *gojsonschema.Schema
 }
 
 func InitializeSchemas() {
@@ -67,8 +67,16 @@ func InitializeSchemas() {
 				continue
 			}
 
+			newSchema, err := gojsonschema.NewSchema(schema)
+
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to load compile resource schema %s:\n", f.Name())
+				fmt.Fprintln(os.Stderr, err)
+				continue
+			}
+
 			s := CoreSchema{
-				Data: schema,
+				Data: newSchema,
 				Parent: schemaInt.Schema{
 					Source: source,
 					Meta:   *meta,
@@ -101,16 +109,16 @@ func (cp CoreProcessor) ResourceExists(resource string) bool {
 	return ok
 }
 
-func (cp CoreProcessor) ResourceValid(resource string, data string) (bool, error) {
-	return cp.validateSchema(resource, gojsonschema.NewStringLoader(data))
+func (cp CoreProcessor) ResourceValid(resource string, data string, required bool) (bool, error) {
+	return cp.validateSchema(resource, gojsonschema.NewStringLoader(data), required)
 }
 
-func (cp CoreProcessor) ResourceValidGo(resource string, data interface{}) (bool, error) {
-	return cp.validateSchema(resource, gojsonschema.NewGoLoader(data))
+func (cp CoreProcessor) ResourceValidGo(resource string, data interface{}, required bool) (bool, error) {
+	return cp.validateSchema(resource, gojsonschema.NewGoLoader(data), required)
 }
 
-func (cp CoreProcessor) validateSchema(resource string, loader gojsonschema.JSONLoader) (bool, error) {
-	result, err := gojsonschema.Validate(cp.schemas[resource].Data, loader)
+func (cp CoreProcessor) validateSchema(resource string, loader gojsonschema.JSONLoader, required bool) (bool, error) {
+	result, err := cp.schemas[resource].Data.Validate(loader)
 
 	if err != nil {
 		return false, err
@@ -121,13 +129,25 @@ func (cp CoreProcessor) validateSchema(resource string, loader gojsonschema.JSON
 	}
 
 	errs := ""
+	validErrors := false
 
 	for i, err := range result.Errors() {
+		if !required && err.Type() == "required" {
+			continue
+		}
+
+		validErrors = true
+
+		err.Type()
 		if i > 0 {
 			errs += ", "
 		}
 
 		errs += err.String()
+	}
+
+	if !validErrors {
+		return true, nil
 	}
 
 	return false, errors.New(errs)

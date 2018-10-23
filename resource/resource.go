@@ -31,11 +31,49 @@ func (cp CoreProcessor) GetResourceList() []string {
 func (cp CoreProcessor) GetResources(resource string, filters []filter.ProcessedFilter) ([]map[string]interface{}, error) {
 	resourceStore := schema.GetProcessor().GetSchema(resource).Meta.Store
 
+	err := checkStoreFilterAssociates(resourceStore, filters)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return (*registry.GetRegistryInternal().GetStore(resourceStore)).GetResources(resource, filters)
+}
+
+func (cp CoreProcessor) CreateResources(resource string, data []map[string]interface{}) error {
+	return (*registry.GetRegistryInternal().GetStore(schema.GetProcessor().GetSchema(resource).Meta.Store)).CreateResources(resource, data)
+}
+
+func (cp CoreProcessor) UpdateResources(resource string, data map[string]interface{}, filters []filter.ProcessedFilter) error {
+	resourceStore := schema.GetProcessor().GetSchema(resource).Meta.Store
+
+	err := checkStoreFilterAssociates(resourceStore, filters)
+
+	if err != nil {
+		return err
+	}
+
+	return (*registry.GetRegistryInternal().GetStore(resourceStore)).UpdateResources(resource, data, filters)
+}
+
+func (cp CoreProcessor) DeleteResources(resource string, filters []filter.ProcessedFilter) error {
+	resourceStore := schema.GetProcessor().GetSchema(resource).Meta.Store
+
+	err := checkStoreFilterAssociates(resourceStore, filters)
+
+	if err != nil {
+		return err
+	}
+
+	return (*registry.GetRegistryInternal().GetStore(resourceStore)).DeleteResources(resource, filters)
+}
+
+func checkStoreFilterAssociates(resourceStore string, filters []filter.ProcessedFilter) error {
 	for _, f := range filters {
 		associates := registry.GetRegistryInternal().GetAssociates(f.Type)
 
 		if len(associates) == 0 {
-			return nil, errors.New("the store does not support a provided filter")
+			return errors.New("the store does not support a provided filter")
 		}
 
 		found := false
@@ -50,8 +88,8 @@ func (cp CoreProcessor) GetResources(resource string, filters []filter.Processed
 			break
 		}
 
-		return nil, errors.New("the store does not support a provided filter")
+		return errors.New("the store does not support a provided filter")
 	}
 
-	return (*registry.GetRegistryInternal().GetStore(schema.GetProcessor().GetSchema(resource).Meta.Store)).GetResources(resource, filters)
+	return nil
 }
