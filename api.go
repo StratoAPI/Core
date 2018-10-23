@@ -22,6 +22,9 @@ func Run() {
 	registry.InitializeFilters()
 	registry.InitializeFacades()
 
+	// Validate Schema Settings
+	schema.ValidateSchemas()
+
 	// Start up stores
 	registry.StartStores()
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/StratoAPI/Core/registry"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -85,6 +86,14 @@ func InitializeSchemas() {
 	}
 
 	fmt.Printf("Loaded %d schema(s)\n", len(coreProcessor.schemas))
+}
+
+func ValidateSchemas() {
+	for _, schema := range coreProcessor.schemas {
+		if registry.GetRegistryInternal().GetStore(schema.Parent.Meta.Store) == nil {
+			panic("resource " + schema.Parent.Meta.Resource + " uses an unsupported store: " + schema.Parent.Meta.Store)
+		}
+	}
 }
 
 func (cp CoreProcessor) ResourceExists(resource string) bool {

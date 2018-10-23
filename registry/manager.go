@@ -1,7 +1,11 @@
 package registry
 
 import (
+	"fmt"
+	"os"
+	"os/signal"
 	"sync"
+	"time"
 )
 
 var storageWaitGroup sync.WaitGroup
@@ -34,7 +38,6 @@ func StartStores() {
 }
 
 func StopStores() {
-	// TODO 30s timeout
 	for _, store := range coreRegistry.stores {
 		err := (*store).Stop()
 
@@ -70,7 +73,6 @@ func StartFacades() {
 }
 
 func StopFacades() {
-	// TODO 30s timeout
 	for _, facade := range coreRegistry.facades {
 		err := (*facade).Stop()
 
@@ -106,7 +108,6 @@ func StartFilters() {
 }
 
 func StopFilters() {
-	// TODO 30s timeout
 	for _, filter := range coreRegistry.filters {
 		err := (*filter).Stop()
 
@@ -117,7 +118,33 @@ func StopFilters() {
 }
 
 func WaitForGoroutines() {
-	facadeWaitGroup.Wait()
-	storageWaitGroup.Wait()
-	filtersWaitGroup.Wait()
+	done := make(chan bool, 1)
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt)
+
+	go func() {
+		facadeWaitGroup.Wait()
+		storageWaitGroup.Wait()
+		filtersWaitGroup.Wait()
+		done <- true
+	}()
+
+	<-stop
+
+	fmt.Println("Shutting down the server...")
+
+	go func() {
+		StopFacades()
+		StopStores()
+		StopFilters()
+	}()
+
+	select {
+	// TODO Make time configurable
+	case <-time.After(30 * time.Second):
+		panic("Graceful shutdown failed!")
+	case <-done:
+		fmt.Println("Server shut down")
+	}
 }
