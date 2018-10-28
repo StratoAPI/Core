@@ -11,6 +11,7 @@ import (
 var storageWaitGroup sync.WaitGroup
 var facadeWaitGroup sync.WaitGroup
 var filtersWaitGroup sync.WaitGroup
+var middlewareWaitGroup sync.WaitGroup
 
 func InitializeStores() {
 	for _, store := range coreRegistry.stores {
@@ -117,6 +118,41 @@ func StopFilters() {
 	}
 }
 
+func InitializeMiddlewares() {
+	for _, middleware := range coreRegistry.middlewares {
+		err := (*middleware).Initialize()
+
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func StartMiddlewares() {
+	storageWaitGroup.Add(len(coreRegistry.middlewares))
+
+	for _, middleware := range coreRegistry.middlewares {
+		go func() {
+			defer storageWaitGroup.Done()
+			err := (*middleware).Start()
+
+			if err != nil {
+				panic(err)
+			}
+		}()
+	}
+}
+
+func StopMiddlewares() {
+	for _, middleware := range coreRegistry.middlewares {
+		err := (*middleware).Stop()
+
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
 func WaitForGoroutines() {
 	done := make(chan bool, 1)
 
@@ -127,6 +163,7 @@ func WaitForGoroutines() {
 		facadeWaitGroup.Wait()
 		storageWaitGroup.Wait()
 		filtersWaitGroup.Wait()
+		middlewareWaitGroup.Wait()
 		done <- true
 	}()
 
@@ -138,6 +175,7 @@ func WaitForGoroutines() {
 		StopFacades()
 		StopStores()
 		StopFilters()
+		StopMiddlewares()
 	}()
 
 	select {

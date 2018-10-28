@@ -10,10 +10,11 @@ import (
 )
 
 type CoreRegistry struct {
-	facades    map[string]*plugins.Facade
-	stores     map[string]*plugins.Storage
-	filters    map[string]*plugins.Filter
-	associates map[string][]string
+	facades     map[string]*plugins.Facade
+	stores      map[string]*plugins.Storage
+	filters     map[string]*plugins.Filter
+	middlewares map[string]*plugins.Middleware
+	associates  map[string][]string
 }
 
 var coreRegistry *CoreRegistry
@@ -24,10 +25,11 @@ func GetRegistryInternal() *CoreRegistry {
 
 func InitializeRegistry() {
 	coreRegistry = &CoreRegistry{
-		facades:    make(map[string]*plugins.Facade),
-		stores:     make(map[string]*plugins.Storage),
-		filters:    make(map[string]*plugins.Filter),
-		associates: make(map[string][]string),
+		facades:     make(map[string]*plugins.Facade),
+		stores:      make(map[string]*plugins.Storage),
+		filters:     make(map[string]*plugins.Filter),
+		middlewares: make(map[string]*plugins.Middleware),
+		associates:  make(map[string][]string),
 	}
 }
 
@@ -123,6 +125,16 @@ func (cr CoreRegistry) RegisterFilter(name string, filter plugins.Filter) error 
 	return nil
 }
 
+func (cr CoreRegistry) RegisterMiddleware(name string, middleware plugins.Middleware) error {
+	if _, ok := cr.middlewares[name]; ok {
+		panic("Middleware with name " + name + " is already registered!")
+	}
+
+	cr.middlewares[name] = &middleware
+
+	return nil
+}
+
 func (cr CoreRegistry) AssociateFilter(filter string, storage string) error {
 	if _, ok := cr.associates[filter]; !ok {
 		cr.associates[filter] = make([]string, 0)
@@ -152,4 +164,8 @@ func (cr CoreRegistry) GetFilter(filter string) *plugins.Filter {
 
 func (cr CoreRegistry) GetAssociates(filter string) []string {
 	return cr.associates[filter]
+}
+
+func (cr CoreRegistry) GetMiddleware(middleware string) *plugins.Middleware {
+	return cr.middlewares[middleware]
 }
