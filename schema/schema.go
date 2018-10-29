@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/StratoAPI/Core/config"
 	"github.com/StratoAPI/Core/registry"
 	"io/ioutil"
 	"os"
@@ -98,8 +99,14 @@ func InitializeSchemas() {
 
 func ValidateSchemas() {
 	for _, schema := range coreProcessor.schemas {
-		if registry.GetRegistryInternal().GetStore(schema.Parent.Meta.Store) == nil {
-			panic("resource " + schema.Parent.Meta.Resource + " uses an unsupported store: " + schema.Parent.Meta.Store)
+		selectedStore := schema.Parent.Meta.Store
+
+		if selectedStore == "" {
+			selectedStore = config.Get().DefaultStore
+		}
+
+		if registry.GetRegistryInternal().GetStore(selectedStore) == nil {
+			panic("resource " + schema.Parent.Meta.Resource + " uses an unsupported store: " + selectedStore)
 		}
 	}
 }

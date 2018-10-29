@@ -2,6 +2,7 @@ package resource
 
 import (
 	"errors"
+	"github.com/StratoAPI/Core/config"
 	"github.com/StratoAPI/Core/registry"
 	"github.com/StratoAPI/Interface/filter"
 	"github.com/StratoAPI/Interface/plugins"
@@ -19,8 +20,18 @@ func InitializeResources() {
 	resource.SetProcessor(coreProcessor)
 }
 
+func (cp CoreProcessor) GetStoreName(resource string) string {
+	resourceStore := schema.GetProcessor().GetSchema(resource).Meta.Store
+
+	if resourceStore == "" {
+		resourceStore = config.Get().DefaultStore
+	}
+
+	return resourceStore
+}
+
 func (cp CoreProcessor) GetStore(resource string) *plugins.Storage {
-	return registry.GetRegistryInternal().GetStore(schema.GetProcessor().GetSchema(resource).Meta.Store)
+	return registry.GetRegistryInternal().GetStore(cp.GetStoreName(resource))
 }
 
 func (cp CoreProcessor) GetResourceList() []string {
@@ -29,7 +40,7 @@ func (cp CoreProcessor) GetResourceList() []string {
 }
 
 func (cp CoreProcessor) GetResources(resource string, filters []filter.ProcessedFilter) ([]map[string]interface{}, error) {
-	resourceStore := schema.GetProcessor().GetSchema(resource).Meta.Store
+	resourceStore := cp.GetStoreName(resource)
 
 	err := checkStoreFilterAssociates(resourceStore, filters)
 
@@ -41,11 +52,11 @@ func (cp CoreProcessor) GetResources(resource string, filters []filter.Processed
 }
 
 func (cp CoreProcessor) CreateResources(resource string, data []map[string]interface{}) error {
-	return (*registry.GetRegistryInternal().GetStore(schema.GetProcessor().GetSchema(resource).Meta.Store)).CreateResources(resource, data)
+	return (*cp.GetStore(resource)).CreateResources(resource, data)
 }
 
 func (cp CoreProcessor) UpdateResources(resource string, data map[string]interface{}, filters []filter.ProcessedFilter) error {
-	resourceStore := schema.GetProcessor().GetSchema(resource).Meta.Store
+	resourceStore := cp.GetStoreName(resource)
 
 	err := checkStoreFilterAssociates(resourceStore, filters)
 
@@ -57,7 +68,7 @@ func (cp CoreProcessor) UpdateResources(resource string, data map[string]interfa
 }
 
 func (cp CoreProcessor) DeleteResources(resource string, filters []filter.ProcessedFilter) error {
-	resourceStore := schema.GetProcessor().GetSchema(resource).Meta.Store
+	resourceStore := cp.GetStoreName(resource)
 
 	err := checkStoreFilterAssociates(resourceStore, filters)
 

@@ -1,4 +1,6 @@
 {
   "plugin_directory": "plugins",
-  "config_directory": "config"
+  "config_directory": "config",
+
+  "default_store":  "Flatfile-JSON"
 }
