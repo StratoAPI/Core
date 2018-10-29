@@ -1,7 +1,7 @@
 module github.com/StratoAPI/Core
 
 require (
-	github.com/StratoAPI/Interface v0.0.11
+	github.com/StratoAPI/Interface v0.0.12
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect

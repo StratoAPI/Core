@@ -19,7 +19,12 @@ func Run() {
 	middleware.InitializeMiddleware()
 
 	// Initialize Plugins
-	registry.InitializePlugins()
+	registry.InitializePlugins(config.Get().PluginDirectory)
+
+	// Initialize Plugin Configs
+	config.InitializePluginConfigs()
+
+	// Initialize Components
 	registry.InitializeStores()
 	registry.InitializeFilters()
 	registry.InitializeFacades()

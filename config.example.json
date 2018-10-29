@@ -1,13 +1,4 @@
 {
-  "host": "0.0.0.0",
-  "port": 5020,
-
   "plugin_directory": "plugins",
-
-  "database": {
-    "type": "flatfile",
-    "flatfile": {
-      "location": "data.json"
-    }
-  }
+  "config_directory": "config"
 }

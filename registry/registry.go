@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"plugin"
 
-	"github.com/StratoAPI/Core/config"
 	"github.com/StratoAPI/Interface/plugins"
 )
 
@@ -14,6 +13,7 @@ type CoreRegistry struct {
 	stores      map[string]*plugins.Storage
 	filters     map[string]*plugins.Filter
 	middlewares map[string]*plugins.Middleware
+	configs     map[string]*plugins.Config
 	associates  map[string][]string
 }
 
@@ -29,12 +29,13 @@ func InitializeRegistry() {
 		stores:      make(map[string]*plugins.Storage),
 		filters:     make(map[string]*plugins.Filter),
 		middlewares: make(map[string]*plugins.Middleware),
+		configs:     make(map[string]*plugins.Config),
 		associates:  make(map[string][]string),
 	}
 }
 
-func InitializePlugins() {
-	files, err := ioutil.ReadDir(config.Get().PluginDirectory)
+func InitializePlugins(pluginDirectory string) {
+	files, err := ioutil.ReadDir(pluginDirectory)
 
 	if err != nil {
 		panic(err)
@@ -44,7 +45,7 @@ func InitializePlugins() {
 
 	loadedPlugins := make([]plugins.Plugin, 0)
 	for _, f := range files {
-		plug, err := plugin.Open(config.Get().PluginDirectory + "/" + f.Name())
+		plug, err := plugin.Open(pluginDirectory + "/" + f.Name())
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -135,6 +136,16 @@ func (cr CoreRegistry) RegisterMiddleware(name string, middleware plugins.Middle
 	return nil
 }
 
+func (cr CoreRegistry) RegisterConfig(name string, config plugins.Config) error {
+	if _, ok := cr.configs[name]; ok {
+		panic("Config with name " + name + " is already registered!")
+	}
+
+	cr.configs[name] = &config
+
+	return nil
+}
+
 func (cr CoreRegistry) AssociateFilter(filter string, storage string) error {
 	if _, ok := cr.associates[filter]; !ok {
 		cr.associates[filter] = make([]string, 0)
@@ -168,4 +179,8 @@ func (cr CoreRegistry) GetAssociates(filter string) []string {
 
 func (cr CoreRegistry) GetMiddleware(middleware string) *plugins.Middleware {
 	return cr.middlewares[middleware]
+}
+
+func (cr CoreRegistry) GetConfigs() map[string]*plugins.Config {
+	return cr.configs
 }
