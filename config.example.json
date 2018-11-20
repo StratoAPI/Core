@@ -2,5 +2,7 @@
   "plugin_directory": "plugins",
   "config_directory": "config",
 
-  "default_store":  "Flatfile-JSON"
+  "default_store":  "Flatfile-JSON",
+
+  "graceful_shutdown_timeout": 30
 }

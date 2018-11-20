@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"plugin"
 
+	"github.com/StratoAPI/Core/config"
+
 	"github.com/StratoAPI/Interface/plugins"
 )
 
@@ -76,6 +78,7 @@ func InitializePlugins(pluginDirectory string) {
 	for _, v := range loadedPlugins {
 		pluginNames = append(pluginNames, v.Name())
 	}
+	config.PushPluginConfigs(coreRegistry.configs)
 
 	for k := range coreRegistry.facades {
 		facadeNames = append(facadeNames, k)

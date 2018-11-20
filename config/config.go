@@ -3,12 +3,13 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/StratoAPI/Core/registry"
+	"github.com/StratoAPI/Interface/plugins"
 	"io/ioutil"
 	"os"
 )
 
 var config Config
+var pluginConfigs = make(map[string]*plugins.Config)
 
 func InitializeConfig() {
 	configFile, err := os.Open("config.json")
@@ -30,10 +31,12 @@ func InitializeConfig() {
 	fmt.Println("Configs initialized")
 }
 
-func InitializePluginConfigs() {
-	configs := registry.GetRegistryInternal().GetConfigs()
+func PushPluginConfigs(configs map[string]*plugins.Config) {
+	pluginConfigs = configs
+}
 
-	for name, conf := range configs {
+func InitializePluginConfigs() {
+	for name, conf := range pluginConfigs {
 		configFile := config.ConfigDirectory + "/" + name + ".json"
 		structure := (*conf).CreateStructure()
 		if _, err := os.Stat(configFile); os.IsNotExist(err) {

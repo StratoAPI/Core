@@ -6,6 +6,8 @@ import (
 	"os/signal"
 	"sync"
 	"time"
+
+	"github.com/StratoAPI/Core/config"
 )
 
 var storageWaitGroup sync.WaitGroup
@@ -94,7 +96,7 @@ func InitializeFilters() {
 }
 
 func StartFilters() {
-	filtersWaitGroup.Add(len(coreRegistry.facades))
+	filtersWaitGroup.Add(len(coreRegistry.filters))
 
 	for _, filter := range coreRegistry.filters {
 		go func() {
@@ -178,9 +180,10 @@ func WaitForGoroutines() {
 		StopMiddlewares()
 	}()
 
+	timeout := config.Get().GracefulShutdownTimeout
+
 	select {
-	// TODO Make time configurable
-	case <-time.After(30 * time.Second):
+	case <-time.After(time.Duration(timeout) * time.Second):
 		panic("Graceful shutdown failed!")
 	case <-done:
 		fmt.Println("Server shut down")
